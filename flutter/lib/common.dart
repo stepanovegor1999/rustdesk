@@ -251,16 +251,16 @@ class MyTheme {
   MyTheme._();
 
   static const Color grayBg = Color(0xFFEFEFF2);
-  static const Color accent = Color(0xFF0071FF);
-  static const Color accent50 = Color(0x770071FF);
-  static const Color accent80 = Color(0xAA0071FF);
+  static const Color accent = Color(0xFF0B2A5B);
+  static const Color accent50 = Color(0x770B2A5B);
+  static const Color accent80 = Color(0xAA0B2A5B);
   static const Color canvasColor = Color(0xFF212121);
   static const Color border = Color(0xFFCCCCCC);
-  static const Color idColor = Color(0xFF00B6F0);
+  static const Color idColor = Color(0xFFD7192A);
   static const Color darkGray = Color.fromARGB(255, 148, 148, 148);
   static const Color cmIdColor = Color(0xFF21790B);
   static const Color dark = Colors.black87;
-  static const Color button = Color(0xFF2C8CFF);
+  static const Color button = Color(0xFF0B2A5B);
   static const Color hoverBorder = Color(0xFF999999);
 
   // ListTile
@@ -3739,6 +3739,7 @@ Widget loadIcon(double size) {
   return Image.asset('assets/icon.png',
       width: size,
       height: size,
+      filterQuality: FilterQuality.high,
       errorBuilder: (ctx, error, stackTrace) => SvgPicture.asset(
             'assets/icon.svg',
             width: size,

@@ -6,6 +6,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide TabBarTheme;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/remote_page.dart';
@@ -25,6 +26,30 @@ const double _kTabBarHeight = kDesktopRemoteTabBarHeight;
 const double _kIconSize = 18;
 const double _kDividerIndent = 10;
 const double _kActionIconSize = 12;
+
+Widget _buildTopLeftLogo(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final asset =
+      isDark ? 'assets/icon_dark_square.png' : 'assets/icon_light_square.png';
+  return SizedBox(
+    width: 20,
+    height: 20,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Image.asset(
+        asset,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (_, __, ___) => SvgPicture.asset(
+          'assets/icon.svg',
+          width: 20,
+          height: 20,
+          fit: BoxFit.contain,
+        ),
+      ),
+    ),
+  );
+}
 
 class TabInfo {
   final String key; // Notice: cm use client_id.toString() as key
@@ -636,16 +661,16 @@ class _DesktopTabState extends State<DesktopTab>
                       child: Row(children: [
                         Offstage(
                           offstage: !showLogo,
-                          child: loadIcon(16),
+                          child: _buildTopLeftLogo(context),
                         ),
                         Offstage(
                             offstage: !showTitle,
-                            child: const Text(
-                              "RustDesk",
+                            child: Text(
+                              bind.mainGetAppNameSync(),
                               style: TextStyle(fontSize: 13),
                             ).marginOnly(left: 2))
                       ]).marginOnly(
-                        left: 5,
+                        left: 6,
                         right: 10,
                       ),
                     ),

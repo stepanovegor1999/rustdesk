@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/consts.dart';
 import 'package:flutter_hbb/desktop/pages/desktop_home_page.dart';
@@ -39,6 +40,45 @@ class DesktopTabPage extends StatefulWidget {
 
 class _DesktopTabPageState extends State<DesktopTabPage> {
   final tabController = DesktopTabController(tabType: DesktopTabType.main);
+
+  Color? _extractTabIconColor(Widget iconWidget) {
+    if (iconWidget is Offstage) {
+      final child = iconWidget.child;
+      if (child is Padding) {
+        final inner = child.child;
+        if (inner is Icon) return inner.color;
+      }
+      if (child is Icon) return child.color;
+    }
+    if (iconWidget is Icon) return iconWidget.color;
+    return null;
+  }
+
+  Widget _buildMainTabWithSvgIcon(
+      String key, Widget icon, Widget label, TabThemeConf themeConf) {
+    final color = _extractTabIconColor(icon);
+    String? asset;
+    if (key == kTabLabelHomePage) {
+      asset = 'assets/home.svg';
+    } else if (key == kTabLabelSettingPage) {
+      asset = 'assets/actions.svg';
+    }
+    final leading = asset == null
+        ? icon
+        : SvgPicture.asset(
+            asset,
+            width: themeConf.iconSize,
+            height: themeConf.iconSize,
+            colorFilter: color == null ? null : svgColor(color),
+          ).paddingOnly(right: 5);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        leading,
+        label,
+      ],
+    );
+  }
 
   _DesktopTabPageState() {
     RemoteCountState.init();
@@ -96,6 +136,7 @@ class _DesktopTabPageState extends State<DesktopTabPage> {
             backgroundColor: Theme.of(context).colorScheme.background,
             body: DesktopTab(
               controller: tabController,
+              tabBuilder: _buildMainTabWithSvgIcon,
               tail: Offstage(
                 offstage: bind.isIncomingOnly() || bind.isDisableSettings(),
                 child: ActionIcon(

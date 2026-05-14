@@ -1,10 +1,11 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/common/widgets/audio_input.dart';
 import 'package:flutter_hbb/common/widgets/setting_widgets.dart';
@@ -45,9 +46,11 @@ const String _kSettingPageTabKeyTag = 'settingPageTabKey';
 class _TabInfo {
   late final SettingsTabKey key;
   late final String label;
-  late final IconData unselected;
-  late final IconData selected;
-  _TabInfo(this.key, this.label, this.unselected, this.selected);
+  final String? svgAsset;
+  final IconData? unselected;
+  final IconData? selected;
+  _TabInfo(this.key, this.label, this.unselected, this.selected,
+      {this.svgAsset});
 }
 
 enum SettingsTabKey {
@@ -182,35 +185,42 @@ class _DesktopSettingPageState extends State<DesktopSettingPage>
       switch (tab) {
         case SettingsTabKey.general:
           settingTabs.add(_TabInfo(
-              tab, 'General', Icons.settings_outlined, Icons.settings));
+              tab, 'General', Icons.settings_outlined, Icons.settings,
+              svgAsset: 'assets/actions.svg'));
           break;
         case SettingsTabKey.safety:
           settingTabs.add(_TabInfo(tab, 'Security',
-              Icons.enhanced_encryption_outlined, Icons.enhanced_encryption));
+              Icons.enhanced_encryption_outlined, Icons.enhanced_encryption,
+              svgAsset: 'assets/secure.svg'));
           break;
         case SettingsTabKey.network:
-          settingTabs
-              .add(_TabInfo(tab, 'Network', Icons.link_outlined, Icons.link));
+          settingTabs.add(_TabInfo(
+              tab, 'Network', Icons.link_outlined, Icons.link,
+              svgAsset: 'assets/transfer.svg'));
           break;
         case SettingsTabKey.display:
           settingTabs.add(_TabInfo(tab, 'Display',
-              Icons.desktop_windows_outlined, Icons.desktop_windows));
+              Icons.desktop_windows_outlined, Icons.desktop_windows,
+              svgAsset: 'assets/display.svg'));
           break;
         case SettingsTabKey.plugin:
           settingTabs.add(_TabInfo(
-              tab, 'Plugin', Icons.extension_outlined, Icons.extension));
+              tab, 'Plugin', Icons.extension_outlined, Icons.extension,
+              svgAsset: 'assets/settings_plugin.svg'));
           break;
         case SettingsTabKey.account:
-          settingTabs.add(
-              _TabInfo(tab, 'Account', Icons.person_outline, Icons.person));
+          settingTabs.add(_TabInfo(
+              tab, 'Account', Icons.person_outline, Icons.person,
+              svgAsset: 'assets/settings_account.svg'));
           break;
         case SettingsTabKey.printer:
-          settingTabs
-              .add(_TabInfo(tab, 'Printer', Icons.print_outlined, Icons.print));
+          settingTabs.add(_TabInfo(
+              tab, 'Printer', Icons.print_outlined, Icons.print,
+              svgAsset: 'assets/settings_printer.svg'));
           break;
         case SettingsTabKey.about:
-          settingTabs
-              .add(_TabInfo(tab, 'About', Icons.info_outline, Icons.info));
+          settingTabs.add(_TabInfo(tab, 'About', Icons.info_outline, Icons.info,
+              svgAsset: 'assets/settings_about.svg'));
           break;
       }
     }
@@ -355,6 +365,26 @@ class _DesktopSettingPageState extends State<DesktopSettingPage>
   Widget _listItem({required _TabInfo tab}) {
     return Obx(() {
       bool selected = tab.key == selectedTab.value;
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      final selectedColor = isDark ? Colors.white : _accentColor;
+      final unselectedColor =
+          Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white70;
+      final iconColor = selected ? selectedColor : unselectedColor;
+      Widget leadingIcon;
+      if (tab.svgAsset != null) {
+        leadingIcon = SvgPicture.asset(
+          tab.svgAsset!,
+          width: 20,
+          height: 20,
+          colorFilter: svgColor(iconColor),
+        );
+      } else {
+        leadingIcon = Icon(
+          selected ? tab.selected : tab.unselected,
+          color: iconColor,
+          size: 20,
+        );
+      }
       return SizedBox(
         width: _kTabWidth,
         height: _kTabHeight,
@@ -373,17 +403,13 @@ class _DesktopSettingPageState extends State<DesktopSettingPage>
             Container(
               width: 4,
               height: _kTabHeight * 0.7,
-              color: selected ? _accentColor : null,
+              color: selected ? selectedColor : null,
             ),
-            Icon(
-              selected ? tab.selected : tab.unselected,
-              color: selected ? _accentColor : null,
-              size: 20,
-            ).marginOnly(left: 13, right: 10),
+            leadingIcon.marginOnly(left: 13, right: 10),
             Text(
               translate(tab.label),
               style: TextStyle(
-                  color: selected ? _accentColor : null,
+                  color: selected ? selectedColor : unselectedColor,
                   fontWeight: FontWeight.w400,
                   fontSize: _kContentFontSize),
             ),
@@ -2352,94 +2378,211 @@ class _About extends StatefulWidget {
 }
 
 class _AboutState extends State<_About> {
+  Widget _buildAboutBannerFallback() {
+    final year = DateTime.now().toString().substring(0, 4);
+    return Container(
+      height: 116,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F4F7),
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: 68,
+            top: 0,
+            bottom: 0,
+            child: ClipPath(
+              clipper: _RightStripeClipper(),
+              child: Container(
+                width: 84,
+                color: const Color(0xFFE30613),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: ClipPath(
+              clipper: _RightStripeClipper(),
+              child: Container(
+                width: 112,
+                color: const Color(0xFF1F2F6B),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 14, 145, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: const Color(0xFFD0D6E0),
+                          width: 1,
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(2.2),
+                      child: loadIcon(15.5),
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'TV GUBERNIA',
+                      style: TextStyle(
+                        color: Color(0xFF1F2F6B),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 1),
+                const Text(
+                  'RustDesk Gubernia',
+                  style: TextStyle(
+                    color: Color(0xFF1F2F6B),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    height: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 9),
+                const Text(
+                  'Secure remote connection\nfor your organization',
+                  style: TextStyle(
+                    color: Color(0xFF1F2F6B),
+                    fontSize: 10.8,
+                    height: 1.3,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '© $year AO Studio Gubernia.',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF335F3E),
+                    fontSize: 10.8,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutBanner() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: SizedBox(
+        height: 116,
+        width: double.infinity,
+        child: Image.asset(
+          'assets/banner.png',
+          fit: BoxFit.cover,
+          alignment: Alignment.centerLeft,
+          errorBuilder: (_, __, ___) => _buildAboutBannerFallback(),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return futureBuilder(future: () async {
-      final license = await bind.mainGetLicense();
       final version = await bind.mainGetVersion();
       final buildDate = await bind.mainGetBuildDate();
       final fingerprint = await bind.mainGetFingerprint();
       return {
-        'license': license,
         'version': version,
         'buildDate': buildDate,
         'fingerprint': fingerprint
       };
     }(), hasData: (data) {
-      final license = data['license'].toString();
       final version = data['version'].toString();
       final buildDate = data['buildDate'].toString();
       final fingerprint = data['fingerprint'].toString();
-      const linkStyle = TextStyle(decoration: TextDecoration.underline);
+      final linkStyle = TextStyle(
+        decoration: TextDecoration.underline,
+        color: Theme.of(context).colorScheme.primary,
+      );
       final scrollController = ScrollController();
       return SingleChildScrollView(
         controller: scrollController,
-        child: _Card(title: translate('About RustDesk'), children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: _Card(
+            title: '${translate('About')} ${bind.mainGetAppNameSync()}',
             children: [
-              const SizedBox(
-                height: 8.0,
-              ),
-              SelectionArea(
-                  child: Text('${translate('Version')}: $version')
-                      .marginSymmetric(vertical: 4.0)),
-              SelectionArea(
-                  child: Text('${translate('Build Date')}: $buildDate')
-                      .marginSymmetric(vertical: 4.0)),
-              if (!isWeb)
-                SelectionArea(
-                    child: Text('${translate('Fingerprint')}: $fingerprint')
-                        .marginSymmetric(vertical: 4.0)),
-              InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com/privacy.html');
-                  },
-                  child: Text(
-                    translate('Privacy Statement'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
-              InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com');
-                  },
-                  child: Text(
-                    translate('Website'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
-              Container(
-                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
-                child: SelectionArea(
-                    child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Ltd.\n$license',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            translate('Slogan_tip'),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                )),
-              ).marginSymmetric(vertical: 4.0)
-            ],
-          ).marginOnly(left: _kContentHMargin)
-        ]),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  SelectionArea(
+                      child: Text('${translate('Version')}: $version')
+                          .marginSymmetric(vertical: 4.0)),
+                  SelectionArea(
+                      child: Text('${translate('Build Date')}: $buildDate')
+                          .marginSymmetric(vertical: 4.0)),
+                  if (!isWeb)
+                    SelectionArea(
+                        child: Text('${translate('Fingerprint')}: $fingerprint')
+                            .marginSymmetric(vertical: 4.0)),
+                  SelectionArea(
+                      child: Text('Разработчик: Степанов Егор')
+                          .marginSymmetric(vertical: 4.0)),
+                  SelectionArea(
+                      child: Text('Дизайнер: Кривкина Диана')
+                          .marginSymmetric(vertical: 4.0)),
+                  InkWell(
+                      onTap: () {
+                        launchUrlString('https://tv-gubernia.ru');
+                      },
+                      child: Text(
+                        translate('Privacy Statement'),
+                        style: linkStyle,
+                      ).marginSymmetric(vertical: 4.0)),
+                  InkWell(
+                      onTap: () {
+                        launchUrlString('https://tv-gubernia.ru');
+                      },
+                      child: Text(
+                        translate('Website'),
+                        style: linkStyle,
+                      ).marginSymmetric(vertical: 4.0)),
+                  _buildAboutBanner().marginSymmetric(vertical: 4.0)
+                ],
+              ).marginOnly(left: _kContentHMargin)
+            ]),
       );
     });
   }
+}
+
+class _RightStripeClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..moveTo(size.width * 0.35, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width * 0.65, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
 //#endregion
@@ -3126,3 +3269,4 @@ void changeSocks5Proxy() async {
 }
 
 //#endregion
+

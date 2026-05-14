@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
@@ -33,7 +33,7 @@ class DesktopHomePage extends StatefulWidget {
   State<DesktopHomePage> createState() => _DesktopHomePageState();
 }
 
-const borderColor = Color(0xFF2F65BA);
+const borderColor = Color(0xFF0B2A5B);
 
 class _DesktopHomePageState extends State<DesktopHomePage>
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
@@ -81,14 +81,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     final children = <Widget>[
       if (!isOutgoingOnly) buildPresetPasswordWarning(),
-      if (bind.isCustomClient())
-        Align(
-          alignment: Alignment.center,
-          child: loadPowered(context),
-        ),
       Align(
         alignment: Alignment.center,
-        child: loadLogo(),
+        child: _buildBrandHeader(context),
       ),
       buildTip(context),
       if (!isOutgoingOnly) buildIDBoard(context),
@@ -180,6 +175,49 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
+  Widget _buildBrandHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(8, 10, 8, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: Image.asset(
+                'assets/banner.png',
+                fit: BoxFit.cover,
+                alignment: Alignment.centerLeft,
+                errorBuilder: (_, __, ___) => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    loadIcon(18),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'RustDesk Gubernia',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xFF1F2F6B),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 2),
+          if (bind.isCustomClient()) loadPowered(context),
+        ],
+      ),
+    );
+  }
   buildRightPane(BuildContext context) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -1144,3 +1182,4 @@ void setPasswordDialog({VoidCallback? notEmptyCallback}) async {
     );
   });
 }
+
