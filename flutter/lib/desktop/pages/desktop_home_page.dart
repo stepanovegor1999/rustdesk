@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
@@ -176,6 +176,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   }
 
   Widget _buildBrandHeader(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bannerAsset = isDark ? 'assets/banner_dark.png' : 'assets/banner.png';
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(8, 10, 8, 6),
@@ -188,7 +190,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
               width: double.infinity,
               height: 46,
               child: Image.asset(
-                'assets/banner.png',
+                bannerAsset,
                 fit: BoxFit.cover,
                 alignment: Alignment.centerLeft,
                 errorBuilder: (_, __, ___) => Row(
@@ -218,10 +220,28 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       ),
     );
   }
+
   buildRightPane(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundAsset = isDark
+        ? 'assets/client_background_dark.png'
+        : 'assets/client_background_light.png';
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
-      child: ConnectionPage(),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Image.asset(
+                backgroundAsset,
+                fit: BoxFit.cover,
+                alignment: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          const ConnectionPage(),
+        ],
+      ),
     );
   }
 
@@ -805,7 +825,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
 
     bool isChattyMethod(String methodName) {
       switch (methodName) {
-        case kWindowBumpMouse: return true;
+        case kWindowBumpMouse:
+          return true;
       }
 
       return false;
@@ -814,7 +835,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     rustDeskWinManager.setMethodHandler((call, fromWindowId) async {
       if (!isChattyMethod(call.method)) {
         debugPrint(
-          "[Main] call ${call.method} with args ${call.arguments} from window $fromWindowId");
+            "[Main] call ${call.method} with args ${call.arguments} from window $fromWindowId");
       }
       if (call.method == kWindowMainWindowOnTop) {
         windowOnTop(null);
@@ -849,9 +870,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           connToken: call.arguments['connToken'],
         );
       } else if (call.method == kWindowBumpMouse) {
-        return RdPlatformChannel.instance.bumpMouse(
-          dx: call.arguments['dx'],
-          dy: call.arguments['dy']);
+        return RdPlatformChannel.instance
+            .bumpMouse(dx: call.arguments['dx'], dy: call.arguments['dy']);
       } else if (call.method == kWindowEventMoveTabToNewWindow) {
         final args = call.arguments.split(',');
         int? windowId;
@@ -1182,4 +1202,3 @@ void setPasswordDialog({VoidCallback? notEmptyCallback}) async {
     );
   });
 }
-

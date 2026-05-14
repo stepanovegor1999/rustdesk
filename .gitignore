@@ -15,6 +15,8 @@ src/version.rs
 cert.pfx
 *.bak
 *png
+!flutter/assets/client_background_dark.png
+!flutter/assets/client_background_light.png
 *svg
 *jpg
 sciter.dll
@@ -56,3 +58,15 @@ vcpkg_installed
 flutter/lib/generated_plugin_registrant.dart
 libsciter.dylib
 flutter/web/
+
+# Local build/deployment state
+.codex_tool_state/
+.tools/
+installed/
+_symlink_target.txt
+res/msi/logs/
+res/msi/hosts*.txt
+res/msi/failed-hosts.txt
+res/msi/*candidates*.csv
+res/msi/*candidates*.txt
+res/msi/ad-workstations-all.csv

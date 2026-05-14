@@ -1,62 +1,67 @@
-# RustDesk Guide
+# RustDesk Gubernia
 
-## Project Layout
+## Build Commands
 
-### Directory Structure
-* `src/` Rust app
-* `src/server/` audio / clipboard / input / video / network
-* `src/platform/` platform-specific code
-* `src/ui/` legacy Sciter UI (deprecated)
-* `flutter/` current UI
-* `libs/hbb_common/` config / proto / shared utils
-* `libs/scrap/` screen capture
-* `libs/enigo/` input control
-* `libs/clipboard/` clipboard
-* `libs/hbb_common/src/config.rs` all options
+```bash
+# Sciter (deprecated) - download sciter.dll first
+cargo run
 
-### Key Components
-- **Remote Desktop Protocol**: Custom protocol implemented in `src/rendezvous_mediator.rs` for communicating with rustdesk-server
-- **Screen Capture**: Platform-specific screen capture in `libs/scrap/`
-- **Input Handling**: Cross-platform input simulation in `libs/enigo/`
-- **Audio/Video Services**: Real-time audio/video streaming in `src/server/`
-- **File Transfer**: Secure file transfer implementation in `libs/hbb_common/`
+# Flutter (current)
+cargo run --features flutter
 
-### UI Architecture
-- **Legacy UI**: Sciter-based (deprecated) - files in `src/ui/`
-- **Modern UI**: Flutter-based - files in `flutter/`
-  - Desktop: `flutter/lib/desktop/`
-  - Mobile: `flutter/lib/mobile/`
-  - Shared: `flutter/lib/common/` and `flutter/lib/models/`
+# Windows release build
+python build.py --flutter
+
+# Full Flutter build with hardware codec
+python build.py --flutter --hwcodec
+
+# Portable Windows installer
+python build.py --flutter --portable
+```
+
+## Dependencies
+
+- **vcpkg** required: set `VCPKG_ROOT` env var
+- Windows: `vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static aom:x64-windows-static`
+- Linux/macOS: `vcpkg install libvpx libyuv opus aom`
+
+## Project Structure
+
+- `src/` - Rust backend (server, client, platform code)
+- `flutter/` - Flutter UI (desktop/mobile/shared)
+- `libs/hbb_common/` - Config, proto, networking, file transfer
+- `libs/scrap/` - Screen capture (platform-specific)
+- `libs/enigo/` - Keyboard/mouse input simulation
+- `libs/clipboard/` - Clipboard (platform-specific)
+- `libs/virtual_display/` - Virtual display driver (Windows)
 
 ## Rust Rules
 
-* Avoid `unwrap()` / `expect()` in production code.
-* Exceptions:
+- Avoid `unwrap()`/`expect()` in production code (tests excepted)
+- Never create nested Tokio runtimes or call `block_on()` in async code
+- Never hold locks across `.await`
+- Use `spawn_blocking` for blocking work
+- Prefer `Result` + `?` over `.unwrap()`
+- Do not add dependencies without justification
 
-  * tests;
-  * lock acquisition where failure means poisoning, not normal control flow.
-* Otherwise prefer `Result` + `?` or explicit handling.
-* Do not ignore errors silently.
-* Avoid unnecessary `.clone()`.
-* Prefer borrowing when practical.
-* Do not add dependencies unless needed.
-* Keep code simple and idiomatic.
+## Flutter/Rust Bridge
 
-## Tokio Rules
+- FFI bindings auto-generated to `flutter/lib/generated_bridge.dart`
+- After modifying `src/flutter_ffi.rs`, regenerate with:
+  ```bash
+  cd flutter && flutter pub get && flutter_rust_bridge_codegen --rust-input ../src/flutter_ffi.rs --dart-output ./lib/generated_bridge.dart
+  ```
+- Post-codegen workaround required (sed replacement in generated_bridge.dart)
 
-* Assume a Tokio runtime already exists.
-* Never create nested runtimes.
-* Never call `Runtime::block_on()` inside Tokio / async code.
-* Do not hide runtime creation inside helpers or libraries.
-* Do not hold locks across `.await`.
-* Prefer `.await`, `tokio::spawn`, channels.
-* Use `spawn_blocking` or dedicated threads for blocking work.
-* Do not use `std::thread::sleep()` in async code.
+## Key Entry Points
 
-## Editing Hygiene
+- `src/main.rs` - Application entry
+- `src/flutter.rs` - Flutter integration
+- `src/flutter_ffi.rs` - FFI exports for Flutter
+- `src/rendezvous_mediator.rs` - Server communication / NAT traversal
+- `src/server.rs` - Audio/clipboard/input/video services
+- `src/client.rs` - Peer connection handling
 
-* Change only what is required.
-* Prefer the smallest valid diff.
-* Do not refactor unrelated code.
-* Do not make formatting-only changes.
-* Keep naming/style consistent with nearby code.
+## Cargo Workspace
+
+Members: `libs/scrap`, `libs/hbb_common`, `libs/enigo`, `libs/clipboard`, `libs/virtual_display`, `libs/portable`, `libs/remote_printer`

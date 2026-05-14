@@ -12,6 +12,26 @@
 > **Misuse Disclaimer:** <br>
 > The developers of RustDesk do not condone or support any unethical or illegal use of this software. Misuse, such as unauthorized access, control or invasion of privacy, is strictly against our guidelines. The authors are not responsible for any misuse of the application.
 
+## Gubernia Desktop Custom Build
+
+This repository contains a branded Gubernia Desktop build based on RustDesk.
+
+Current customization scope:
+
+- Windows Flutter application branding is changed to `Gubernia Desktop`.
+- Windows executable output is `Gubernia Desktop.exe`; `rustdesk.exe` is not packaged by the MSI.
+- Application icons, taskbar icon, installer images, banners, light/dark theme assets, and client backgrounds are branded for Gubernia Desktop.
+- The About page includes the Gubernia Desktop artwork and attribution text.
+- The MSI package is localized for `ru-ru`, uses the branded product name, and creates branded desktop/start menu shortcuts.
+- The MSI custom actions run `--after-install` so the service/startup wiring is completed without requiring the in-app install button.
+- WinRM and GPO deployment scripts are available under `res/msi/` for removing old RustDesk installations, installing Gubernia Desktop, and setting a permanent password after deployment.
+
+Operational notes:
+
+- Do not commit real deployment passwords, private keys, salts, password hashes, host inventories, or MSI logs.
+- Deployment scripts accept the permanent password through `-Password` or the `GUBERNIA_DESKTOP_PASSWORD` process environment variable.
+- Generated local state such as `.tools/`, `.codex_tool_state/`, deployment logs, failed-host lists, and AD inventories is intentionally ignored.
+
 
 Chat with us: [Discord](https://discord.gg/nDceKgxnkV) | [Twitter](https://twitter.com/rustdesk) | [Reddit](https://www.reddit.com/r/rustdesk) | [YouTube](https://www.youtube.com/@rustdesk)
 

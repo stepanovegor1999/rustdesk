@@ -2,6 +2,20 @@
 <Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
 	<!--$PreVarsStart$-->
+	<?define Version="1.4.6.29646096" ?>
+	<?define Manufacturer="AO Studio Gubernia" ?>
+	<?define Product="Gubernia Desktop" ?>
+	<?define AppExeName="Gubernia Desktop.exe" ?>
+	<?define SourceExeName="Gubernia Desktop.exe" ?>
+	<?define Description="Gubernia Desktop Installer" ?>
+	<?define ProductLower="rustdesk" ?>
+	<?define RegKeyRoot=".$(var.ProductLower)" ?>
+	<?define RegKeyInstall="$(var.RegKeyRoot)\Install" ?>
+	<?define BuildDir="E:\RustDesk\flutter\build\windows\x64\runner\Release" ?>
+	<?define BuildDate="2026-05-14 14:38" ?>
+
+	<!-- The UpgradeCode must be consistent for each product. ! -->
+	<?define UpgradeCode = "54dba09a-a947-53c4-8dd8-dc70a530fae3" ?>
 	<!--$PreVarsEnd$-->
 
 </Include>

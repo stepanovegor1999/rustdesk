@@ -16,7 +16,7 @@ AppDir:
   path: ./AppDir
   app_info:
     id: rustdesk
-    name: rustdesk
+    name: RustDesk Gubernia
     icon: rustdesk
     version: 1.4.6
     exec: usr/share/rustdesk/rustdesk

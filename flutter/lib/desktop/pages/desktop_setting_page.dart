@@ -2484,13 +2484,16 @@ class _AboutState extends State<_About> {
   }
 
   Widget _buildAboutBanner() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bannerAsset =
+        isDark ? 'assets/about_banner_dark.png' : 'assets/about_banner_light.png';
     return ClipRRect(
       borderRadius: BorderRadius.circular(3),
       child: SizedBox(
         height: 116,
         width: double.infinity,
         child: Image.asset(
-          'assets/banner.png',
+          bannerAsset,
           fit: BoxFit.cover,
           alignment: Alignment.centerLeft,
           errorBuilder: (_, __, ___) => _buildAboutBannerFallback(),

@@ -1,4 +1,4 @@
-﻿<Project Sdk="WixToolset.Sdk/4.0.5">
+<Project Sdk="WixToolset.Sdk/4.0.5">
   <PropertyGroup>
     <IncludeSearchPaths>
     </IncludeSearchPaths>
@@ -8,6 +8,9 @@
   <ItemGroup>
     <Content Include="Includes.wxi" />
     <Content Include="Resources\icon.ico" />
+    <Content Include="Resources\desktop_icon.ico" />
+    <Content Include="Resources\WixUIBannerBmp.bmp" />
+    <Content Include="Resources\WixUIDialogBmp.bmp" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Firewall.wixext" Version="4.0.5" />

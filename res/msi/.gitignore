@@ -10,4 +10,8 @@ CustomActions/x64
 CustomActions/*.user
 CustomActions/*.filters
 
-Package/Resources
+Package/Resources/*
+!Package/Resources/
+!Package/Resources/desktop_icon.ico
+!Package/Resources/WixUIBannerBmp.bmp
+!Package/Resources/WixUIDialogBmp.bmp

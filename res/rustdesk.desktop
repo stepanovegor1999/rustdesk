@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=RustDesk
-GenericName=Remote Desktop
-Comment=Remote Desktop
+Name=RustDesk Gubernia
+GenericName=Secure Remote Desktop
+Comment=Secure remote access for AO Studio Gubernia
 Exec=rustdesk %u
 Icon=rustdesk
 Terminal=false
@@ -10,7 +10,7 @@ StartupNotify=true
 Categories=Network;RemoteAccess;GTK;
 Keywords=internet;linux;dart;rust;remote-control;p2p;teamviewer;rust-lang;rdp;remote-desktop;vnc;
 Actions=new-window;
-StartupWMClass=rustdesk
+StartupWMClass=RustDesk Gubernia
 
 X-Desktop-File-Install-Version=0.23
 

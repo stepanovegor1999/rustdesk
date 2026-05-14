@@ -107,8 +107,11 @@ def read_lines_and_start_index(file_path, tag_start, tag_end):
         return None, None
     if index_end == -1:
         print(f'Error: end tag "{tag_end}" not found')
-        return None, None
-    return lines, index_start
+        return None, None, None
+    if index_end <= index_start:
+        print(f'Error: end tag "{tag_end}" must be after start tag "{tag_start}"')
+        return None, None, None
+    return lines, index_start, index_end
 
 
 def insert_components_between_tags(lines, index_start, app_name, dist_dir):
@@ -117,7 +120,8 @@ def insert_components_between_tags(lines, index_start, app_name, dist_dir):
     idx = 1
     for file_path in path.glob("**/*"):
         if file_path.is_file():
-            if file_path.name.lower() == f"{app_name}.exe".lower():
+            file_name_lower = file_path.name.lower()
+            if file_name_lower in {f"{app_name}.exe".lower(), "rustdesk.exe"}:
                 continue
 
             subdir = str(file_path.parent.relative_to(path))
@@ -160,7 +164,7 @@ def gen_pre_vars(args, dist_dir):
             f'{indent}<?define Manufacturer="{args.manufacturer}" ?>\n',
             f'{indent}<?define Product="{args.app_name}" ?>\n',
             f'{indent}<?define AppExeName="{args.app_name}.exe" ?>\n',
-            f'{indent}<?define SourceExeName="rustdesk.exe" ?>\n',
+            f'{indent}<?define SourceExeName="{args.app_name}.exe" ?>\n',
             f'{indent}<?define Description="{args.app_name} Installer" ?>\n',
             f'{indent}<?define ProductLower="rustdesk" ?>\n',
             f'{indent}<?define RegKeyRoot=".$(var.ProductLower)" ?>\n',
@@ -242,8 +246,9 @@ def gen_custom_dialog_bitmaps():
             "WixUIUpIco",
         ]
         to_insert_lines = []
+        resources_dir = Path(sys.argv[0]).parent.joinpath("Package/Resources")
         for var in vars:
-            if Path(f"Package/Resources/{var}.bmp").exists():
+            if resources_dir.joinpath(f"{var}.bmp").exists():
                 to_insert_lines.append(
                     f'{indent}<WixVariable Id="{var}" Value="Resources\\{var}.bmp" />\n'
                 )
@@ -431,10 +436,11 @@ def gen_conn_type(args):
 
 def gen_content_between_tags(filename, tag_start, tag_end, func):
     target_file = Path(sys.argv[0]).parent.joinpath(filename)
-    lines, index_start = read_lines_and_start_index(target_file, tag_start, tag_end)
+    lines, index_start, index_end = read_lines_and_start_index(target_file, tag_start, tag_end)
     if lines is None:
         return False
 
+    del lines[index_start + 1:index_end]
     func(lines, index_start)
 
     with open(target_file, "w", encoding="utf-8") as f:
