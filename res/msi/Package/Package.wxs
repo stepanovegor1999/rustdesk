@@ -57,6 +57,7 @@
 
 		<!--https://wixtoolset.org/docs/tools/wixext/wixui/#customizing-a-dialog-set-->
 		<!--$CustomBitmapsStart$-->
+		<WixVariable Id="WixUIDialogBmp" Value="Resources\WixUIDialogBmp.bmp" />
 		<!--$CustomBitmapsEnd$-->
 	</Package>
 </Wix>

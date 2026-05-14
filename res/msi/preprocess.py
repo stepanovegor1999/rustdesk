@@ -27,15 +27,15 @@ g_arpsystemcomponent = {
     },
     "Contact": {
         "msi": "ARPCONTACT",
-        "v": "https://github.com/rustdesk/rustdesk",
+        "v": "https://tv-gubernia.ru",
     },
     "HelpLink": {
         "msi": "ARPHELPLINK",
-        "v": "https://github.com/rustdesk/rustdesk/issues/",
+        "v": "https://tv-gubernia.ru",
     },
     "ReadMe": {
         "msi": "ARPREADME",
-        "v": "https://github.com/rustdesk/rustdesk",
+        "v": "https://tv-gubernia.ru",
     },
 }
 
@@ -73,7 +73,7 @@ def make_parser():
         help='Connection type, e.g. "incoming", "outgoing". Default is empty, means incoming-outgoing',
     )
     parser.add_argument(
-        "--app-name", type=str, default="RustDesk", help="The app name."
+        "--app-name", type=str, default="Gubernia Desktop", help="The app name."
     )
     parser.add_argument(
         "-v", "--version", type=str, default="", help="The app version."
@@ -85,7 +85,7 @@ def make_parser():
         "-m",
         "--manufacturer",
         type=str,
-        default="PURSLANE",
+        default="AO Studio Gubernia",
         help="The app manufacturer.",
     )
     return parser
@@ -159,8 +159,10 @@ def gen_pre_vars(args, dist_dir):
             f'{indent}<?define Version="{g_version}" ?>\n',
             f'{indent}<?define Manufacturer="{args.manufacturer}" ?>\n',
             f'{indent}<?define Product="{args.app_name}" ?>\n',
+            f'{indent}<?define AppExeName="{args.app_name}.exe" ?>\n',
+            f'{indent}<?define SourceExeName="rustdesk.exe" ?>\n',
             f'{indent}<?define Description="{args.app_name} Installer" ?>\n',
-            f'{indent}<?define ProductLower="{args.app_name.lower()}" ?>\n',
+            f'{indent}<?define ProductLower="rustdesk" ?>\n',
             f'{indent}<?define RegKeyRoot=".$(var.ProductLower)" ?>\n',
             f'{indent}<?define RegKeyInstall="$(var.RegKeyRoot)\\Install" ?>\n',
             f'{indent}<?define BuildDir="{dist_dir}" ?>\n',
@@ -459,13 +461,20 @@ def init_global_vars(dist_dir, app_name, args):
 
     def read_process_output(args):
         process = subprocess.Popen(
-            f"{dist_app} {args}",
+            [str(dist_app), args],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            shell=True,
+            shell=False,
         )
         output, _ = process.communicate()
-        return output.decode("utf-8").strip()
+        # RustDesk output can be encoded by active Windows codepage.
+        # Try UTF-8 first, then common Windows fallbacks.
+        for enc in ("utf-8", "cp65001", "cp1251", "cp866"):
+            try:
+                return output.decode(enc).strip()
+            except UnicodeDecodeError:
+                continue
+        return output.decode("utf-8", errors="replace").strip()
 
     global g_version
     global g_build_date
