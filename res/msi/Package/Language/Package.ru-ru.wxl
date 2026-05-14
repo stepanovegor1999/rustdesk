@@ -1,0 +1,56 @@
+<!--
+This file contains the declaration of all the localizable strings.
+-->
+<WixLocalization Culture="ru-ru" Codepage="1251"
+	xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+	<String Id="SummaryCodepage" Value="1251" />
+	<String Id="ProductLanguage" Value="1049" />
+
+	<!-- General strings -->
+	<String Id="DowngradeError" Value="Более новая версия [ProductName] уже установлена." />
+
+	<String Id="AR_Comment" Value="Gubernia Desktop" />
+
+	<String Id="F_App" Value="Gubernia Desktop" />
+	<String Id="F_App_Desc" Value="Gubernia Desktop — установка основных компонентов." />
+
+	<String Id="SC_Uninstall" Value="Удалить Gubernia Desktop" />
+	<String Id="SC_Uninstall_Desc" Value="Удаляет Gubernia Desktop с компьютера" />
+
+	<!-- Client related strings -->
+	<String Id="F_Client" Value="Клиент" />
+	<String Id="F_Client_Desc" Value="Пользовательский интерфейс." />
+	<String Id="F_Client_Plugins" Value="Плагины" />
+	<String Id="F_Client_Plugins_Desc" Value="Плагины для клиента." />
+	<String Id="F_LAVFilters" Value="LAV Filters" />
+	<String Id="F_LAVFilters_Desc" Value="Рекомендуемые фильтры DirectShow для корректного воспроизведения." />
+
+	<String Id="SC_Client" Value="Gubernia Desktop" />
+	<String Id="SC_Client_Desc" Value="Запуск Gubernia Desktop." />
+
+	<String Id="SC_Client_Tray" Value="Gubernia Desktop Tray" />
+	<String Id="SC_Client_Tray_Desc" Value="Запуск Gubernia Desktop в трее." />
+
+	<!-- Server related strings -->
+	<String Id="F_Server" Value="Сервер" />
+	<String Id="F_Server_Desc" Value="Серверная часть Gubernia Desktop." />
+	<String Id="F_Server_Plugins" Value="Плагины" />
+	<String Id="F_Server_Plugins_Desc" Value="Плагины для сервера." />
+
+	<String Id="Service_DisplayName" Value="Служба Gubernia Desktop" />
+	<String Id="Service_Description" Value="Служба запускает Gubernia Desktop." />
+
+	<!-- Launch Conditions -->
+	<String Id="LC_OS" Value="[ProductName] требует Windows 7 / 2008 R2 или новее." />
+	<String Id="LC_ADMIN" Value="Для установки [ProductName] нужны права администратора." />
+
+	<!-- User Interfaces -->
+	<String Id="AnotherAppDialogTitle" Value="Установка отменена."/>
+	<String Id="AnotherAppDialogDescription" Value="Приложение уже установлено другим способом, сначала удалите текущую версию."/>
+
+	<String Id="MyInstallDirDlgDesktopShortcuts" Value="Создать ярлык на рабочем столе" />
+	<String Id="MyInstallDirDlgStartMenuShortcuts" Value="Создать ярлыки в меню Пуск" />
+	<String Id="MyInstallDirDlgPrinter" Value="Установить Gubernia Printer" />
+
+</WixLocalization>

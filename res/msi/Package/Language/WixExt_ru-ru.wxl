@@ -1,0 +1,21 @@
+<!--
+Adapted by Gubernia for Russian localization
+-->
+<WixLocalization Culture="ru-ru"
+	xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+	<!-- Firewall Extension -->
+	<String Id="msierrFirewallCannotConnect" Overridable="yes" Value="Не удалось подключиться к брандмауэру Windows. ([2]   [3]   [4]   [5])" />
+
+	<String Id="WixSchedFirewallExceptionsInstall" Overridable="yes" Value="Настройка брандмауэра Windows" />
+	<String Id="WixSchedFirewallExceptionsUninstall" Overridable="yes" Value="Настройка брандмауэра Windows" />
+	<String Id="WixRollbackFirewallExceptionsInstall" Overridable="yes" Value="Откат настроек брандмауэра Windows" />
+	<String Id="WixExecFirewallExceptionsInstall" Overridable="yes" Value="Применение настроек брандмауэра Windows" />
+	<String Id="WixRollbackFirewallExceptionsUninstall" Overridable="yes" Value="Откат настроек брандмауэра Windows" />
+	<String Id="WixExecFirewallExceptionsUninstall" Overridable="yes" Value="Удаление настроек брандмауэра Windows" />
+
+	<!-- Util Extension -->
+	<String Id="msierrSecureObjectsFailedCreateSD" Overridable="yes" Value="Не удалось создать дескриптор безопасности [3]\[4], ошибка: [2]" />
+	<String Id="msierrSecureObjectsFailedSet" Overridable="yes" Value="Не удалось применить дескриптор безопасности объекта [3], ошибка: [2]" />
+	<String Id="msierrSecureObjectsUnknownType" Overridable="yes" Value="Неизвестный тип объекта [3], ошибка: [2]" />
+</WixLocalization>
