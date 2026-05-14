@@ -34,6 +34,33 @@ function Write-DeployLog {
     Add-Content -LiteralPath $RunLog -Value $line -Encoding UTF8
 }
 
+function Get-StringProperty {
+    param(
+        [object]$Object,
+        [string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return ""
+    }
+
+    $property = [System.Management.Automation.PSObject]::AsPSObject($Object).Properties[$Name]
+    if ($null -eq $property -or $null -eq $property.Value) {
+        return ""
+    }
+
+    return [string]$property.Value
+}
+
+function Get-LastExitCodeOrZero {
+    $value = Get-Variable -Name LASTEXITCODE -ValueOnly -ErrorAction SilentlyContinue
+    if ($null -eq $value) {
+        return 0
+    }
+
+    return [int]$value
+}
+
 function Get-UninstallEntries {
     param([string]$DisplayNameRegex)
 
@@ -44,20 +71,22 @@ function Get-UninstallEntries {
 
     foreach ($root in $roots) {
         Get-ChildItem -LiteralPath $root -ErrorAction SilentlyContinue | ForEach-Object {
+            $keyPath = $_.PSPath
             try {
-                $props = Get-ItemProperty -LiteralPath $_.PSPath -ErrorAction Stop
-                if ($props.DisplayName -and $props.DisplayName -match $DisplayNameRegex) {
+                $props = Get-ItemProperty -LiteralPath $keyPath -ErrorAction Stop
+                $displayName = Get-StringProperty -Object $props -Name "DisplayName"
+                if ($displayName -and $displayName -match $DisplayNameRegex) {
                     [pscustomobject]@{
-                        KeyPath = $_.PSPath
-                        DisplayName = [string]$props.DisplayName
-                        DisplayVersion = [string]$props.DisplayVersion
-                        InstallLocation = [string]$props.InstallLocation
-                        QuietUninstallString = [string]$props.QuietUninstallString
-                        UninstallString = [string]$props.UninstallString
+                        KeyPath = $keyPath
+                        DisplayName = $displayName
+                        DisplayVersion = Get-StringProperty -Object $props -Name "DisplayVersion"
+                        InstallLocation = Get-StringProperty -Object $props -Name "InstallLocation"
+                        QuietUninstallString = Get-StringProperty -Object $props -Name "QuietUninstallString"
+                        UninstallString = Get-StringProperty -Object $props -Name "UninstallString"
                     }
                 }
             } catch {
-                Write-DeployLog "Failed to read uninstall entry '$($_.PSPath)': $($_.Exception.Message)"
+                Write-DeployLog "Failed to read uninstall entry '$keyPath': $($_.Exception.Message)"
             }
         }
     }
@@ -284,7 +313,7 @@ function Set-PermanentPassword {
     Write-DeployLog "Setting permanent password."
     $passwordLog = Join-Path $LogRoot "password.log"
     & $ExePath --password $Password *> $passwordLog
-    $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+    $exitCode = Get-LastExitCodeOrZero
     if ($exitCode -ne 0) {
         $output = if (Test-Path -LiteralPath $passwordLog) { Get-Content -LiteralPath $passwordLog -Raw -ErrorAction SilentlyContinue } else { "" }
         throw "Password command failed with exit code $exitCode. Output: $output"
